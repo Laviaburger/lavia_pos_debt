@@ -1,49 +1,37 @@
-odoo.define('pos_dept_customization.ClosePosPopup', function(require) {
-    "use strict";
+odoo.define('lavia_pos_debt.ClosePosPopup', function(require) {
+    'use strict';
 
-    // Load the original ClosePosPopup component
-    const ClosePosPopupOriginal = require('point_of_sale.ClosePosPopup');
+    const ClosePosPopup = require('point_of_sale.ClosePosPopup');
     const Registries = require('point_of_sale.Registries');
-    const { useState } = owl;
 
-    // Extend the original ClosePosPopup
-    class ClosePosPopup extends ClosePosPopupOriginal {
+    const CanceledOrdersClosePosPopup = ClosePosPopup => class extends ClosePosPopup {
         setup() {
-            super.setup(); // Call the original setup method
-            this.state = useState({
-                dept: 0, // Initialize the department field
-            });
-            this.fetchDeliverySubtotal();
+            super.setup();
+            this.getCanceledOrders();
         }
 
-        // Fetch the subtotal from delivery.order model for the current POS session
-        async fetchDeliverySubtotal() {
+        async getCanceledOrders() {
+            const currentSession = this.env.pos.pos_session;
             try {
-                const currentSessionName = this.env.pos.pos_session.name; // Get current POS session name
-                const subtotal = await this.rpc({
-                    model: 'delivery.order',
-                    method: 'search_read',
-                    args: [
-                        [['state', '!=', 'completed'], ['pos_session_id.name', '=', currentSessionName]],
-                        ['subtotal'],
-                    ],
-                    kwargs: { context: this.env.session.user_context },
+                const result = await this.rpc({
+                    model: 'pos.session',
+                    method: 'read',
+                    args: [[currentSession.id], ['canceled_orders_amount']],
+                    context: {
+                        'active_session_id': currentSession.id
+                    },
                 });
-                if (subtotal.length > 0) {
-                    this.state.dept = -subtotal[0].subtotal; // Set the negative subtotal
+                if (result && result.length) {
+                    this.env.pos.pos_session.canceled_orders_amount = result[0].canceled_orders_amount;
                 }
             } catch (error) {
-                console.error('Error fetching delivery subtotal:', error);
-                await this.showPopup('ErrorPopup', {
-                    title: this.env._t('Error'),
-                    body: this.env._t('Failed to fetch delivery subtotal.'),
-                });
+                console.error('Failed to fetch canceled orders amount:', error);
             }
         }
-    }
+    };
 
-    // Extend the original ClosePosPopup in the registry
-    Registries.Component.extend(ClosePosPopupOriginal, ClosePosPopup);
+    Registries.Component.extend(ClosePosPopup, CanceledOrdersClosePosPopup);
 
-    return ClosePosPopup;
+    return CanceledOrdersClosePosPopup;
+
 });

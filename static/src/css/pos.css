@@ -1,0 +1,8 @@
+.pos .popup.close-pos-popup .canceled-orders {
+    border-top: 1px solid #ddd;
+}
+
+.pos .popup.close-pos-popup .amount.negative {
+    color: #ff0000;
+    font-weight: bold;
+}

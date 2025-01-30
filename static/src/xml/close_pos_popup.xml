@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templates id="template" xml:space="preserve">
+<templates id="point_of_sale.template" inherit_id="point_of_sale.template" xml:space="preserve">
     <t t-extend="ClosePosPopup">
-        <!-- For Cash Payment Method -->
-        <t t-jquery=".payment-methods-overview table tbody tr:has(td:contains('Cash'))" t-operation="after">
-            <tr class="dept-row">
-                <td>Department Subtotal</td>
-                <td colspan="3" class="text-right">
-                    <span t-esc="env.pos.format_currency(state.dept[props.info.defaultCashDetails.id])"/>
-                </td>
-            </tr>
-        </t>
-        <!-- For Other Payment Methods (Bank) -->
-        <t t-jquery=".payment-methods-overview table tbody tr:has(td:contains('Bank'))" t-operation="after">
-            <tr class="dept-row">
-                <td>Department Subtotal</td>
-                <td colspan="3" class="text-right">
-                    <span t-esc="env.pos.format_currency(state.dept[pm.id])"/>
-                </td>
-            </tr>
+        <t t-jquery="tbody[t-if='otherPaymentMethods.length > 0']" t-operation="after">
+            <tbody t-if="env.pos.pos_session.canceled_orders_amount != 0" class="canceled-orders">
+                <tr>
+                    <td>Canceled Orders</td>
+                    <td class="amount negative" t-esc="env.pos.format_currency(env.pos.pos_session.canceled_orders_amount)"/>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
         </t>
     </t>
 </templates>
