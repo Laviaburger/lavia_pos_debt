@@ -10,6 +10,51 @@ odoo.define('lavia_pos_debt.ClosePosPopup', function(require) {
             this.getCanceledOrders();
         }
 
+        async confirm() {
+            if (this.env.pos.useBlackBoxBe && this.env.pos.useBlackBoxBe()) {
+                let status = await this.getUserSessionStatus(this.env.pos.pos_session.id, this.env.pos.pos_session.user_id[0]);
+
+                console.log(`Status is: ${status}`);
+
+                if (status) {
+                    await this.showPopup('ErrorPopup', {
+                        title: this.env._t("POS error"),
+                        body: this.env._t("You need to clock out before closing the POS."),
+                    });
+                    return;
+                }
+            }
+
+            let allCompleted = await this.removeOnClose();
+            if (allCompleted && allCompleted.length > 0) {
+                console.warn(`Order with this number is not completed: ${allCompleted} and they type is: ${typeof allCompleted}`);
+                return;
+            }
+            
+            return super.confirm();
+        }
+
+        async removeOnClose() {
+            try {
+                const currentSession = this.env.pos.pos_session;
+                const result = await this.rpc({
+                    model: 'pos.session',
+                    method: 'write',
+                    args: [[currentSession.id], { 'unpaied_price': 0 }], 
+                    context: {
+                        'active_session_id': currentSession.id
+                    },
+                });
+                
+                console.log(`Successfully set unpaied_price to 0 for session ${currentSession.id}`);
+                return [];
+                
+            } catch (error) {
+                console.error('Failed to reset unpaied_price:', error);
+                return ['Error'];
+            }
+        }
+
         async getCanceledOrders() {
             const currentSession = this.env.pos.pos_session;
             try {
@@ -27,12 +72,11 @@ odoo.define('lavia_pos_debt.ClosePosPopup', function(require) {
             } catch (error) {
                 console.error('Failed to fetch canceled orders amount:', error);
             }
-            console.log(`chertor pert ${currentSession.unpaied_price}`);
+            console.log(`Current unpaid price: ${currentSession.unpaied_price}`);
         }
     };
 
     Registries.Component.extend(ClosePosPopup, CanceledOrdersClosePosPopup);
 
     return CanceledOrdersClosePosPopup;
-
 });

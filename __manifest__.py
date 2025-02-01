@@ -1,7 +1,7 @@
 {
         'name': 'Lavia Pos Dept On Close PopUp',
         'version': '1.0',
-        'depends': ['point_of_sale'],
+        'depends': ['point_of_sale', 'delivery_person'],
         'data': [
             'views/pos_session_views.xml',
         ],
