@@ -6,3 +6,19 @@
     color: #ff0000;
     font-weight: bold;
 }
+
+.pos .popup.opening-cash-control .canceled-orders-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+}
+
+.pos .popup.opening-cash-control .canceled-orders-section .info-title {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.pos .popup.opening-cash-control .amount.negative {
+    color: #ff0000;
+    font-weight: bold;
+}

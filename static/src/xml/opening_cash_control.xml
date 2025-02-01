@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="point_of_sale.CashOpeningPopup" t-inherit-mode="extension" owl="1">
+        <xpath expr="//textarea[hasclass('opening-cash-notes')]" position="after">
+            <!-- <div t-if="env.pos.pos_session.unpaied_price != 0" class="canceled-orders-section"> -->
+                <span class="info-title">Canceled Orders</span>
+                <div class="cash-input-sub-section">
+                    <span class="amount negative">
+                        <t t-esc="env.pos.format_currency(env.pos.pos_session.unpaied_price || 0)"/>
+                    </span>
+                <!-- </div> -->
+            </div>
+        </xpath>
+    </t>
+</templates>

@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templates id="point_of_sale.template" inherit_id="point_of_sale.template" xml:space="preserve">
-    <t t-extend="ClosePosPopup">
-        <t t-jquery="tbody[t-if='otherPaymentMethods.length > 0']" t-operation="after">
-            <tbody t-if="env.pos.pos_session.canceled_orders_amount != 0" class="canceled-orders">
-                <tr>
-                    <td>Canceled Orders</td>
-                    <td class="amount negative" t-esc="env.pos.format_currency(env.pos.pos_session.canceled_orders_amount)"/>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </t>
+<templates id="template" xml:space="preserve">
+    <t t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension" owl="1">
+        <xpath expr="//tbody[hasclass('cash-overview')]" position="before">
+            <!-- <t t-if="env.pos.pos_session.unpaied_price != 0"> -->
+                <tbody class="canceled-orders">
+                    <tr>
+                        <td>Canceled Orders</td>
+                        <td class="amount negative">
+                            <t t-esc="env.pos.format_currency(env.pos.pos_session.unpaied_price || 0)"/>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            <!-- </t> -->
+        </xpath>
     </t>
 </templates>

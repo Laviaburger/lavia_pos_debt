@@ -1,10 +1,10 @@
-odoo.define('lavia_pos_debt.ClosePosPopup', function(require) {
+odoo.define('lavia_pos_debt.OpeningCashPopup', function(require) {
     'use strict';
 
-    const ClosePosPopup = require('point_of_sale.ClosePosPopup');
+    const CashOpeningPopup = require('point_of_sale.CashOpeningPopup');
     const Registries = require('point_of_sale.Registries');
 
-    const CanceledOrdersClosePosPopup = ClosePosPopup => class extends ClosePosPopup {
+    const CanceledOrdersOpeningPopup = CashOpeningPopup => class extends CashOpeningPopup {
         setup() {
             super.setup();
             this.getCanceledOrders();
@@ -23,16 +23,16 @@ odoo.define('lavia_pos_debt.ClosePosPopup', function(require) {
                 });
                 if (result && result.length) {
                     this.env.pos.pos_session.unpaied_price = result[0].unpaied_price;
+                    // Force component to re-render
+                    this.render();
                 }
             } catch (error) {
                 console.error('Failed to fetch canceled orders amount:', error);
             }
-            console.log(`chertor pert ${currentSession.unpaied_price}`);
         }
     };
 
-    Registries.Component.extend(ClosePosPopup, CanceledOrdersClosePosPopup);
+    Registries.Component.extend(CashOpeningPopup, CanceledOrdersOpeningPopup);
 
-    return CanceledOrdersClosePosPopup;
-
+    return CanceledOrdersOpeningPopup;
 });
