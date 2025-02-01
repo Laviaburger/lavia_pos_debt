@@ -5,7 +5,7 @@
             <!-- <t t-if="env.pos.pos_session.unpaied_price != 0"> -->
                 <tbody class="canceled-orders">
                     <tr>
-                        <td>Canceled Orders</td>
+                        <td>Unpaied Price</td>
                         <td class="amount negative">
                             <t t-esc="env.pos.format_currency(env.pos.pos_session.unpaied_price || 0)"/>
                         </td>
