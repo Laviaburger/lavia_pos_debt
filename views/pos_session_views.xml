@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group" position="inside">
-                <field name="unpaied_price" widget="monetary"/>
+                <field name="unpaid_price" widget="monetary"/>
             </xpath>
         </field>
     </record>

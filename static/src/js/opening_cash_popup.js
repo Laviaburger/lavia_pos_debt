@@ -3,11 +3,12 @@ odoo.define('lavia_pos_debt.OpeningCashPopup', function(require) {
 
     const CashOpeningPopup = require('point_of_sale.CashOpeningPopup');
     const Registries = require('point_of_sale.Registries');
+    const rpc = require('web.rpc');
 
-    const CanceledOrdersOpeningPopup = CashOpeningPopup => class extends CashOpeningPopup {
-        setup() {
-            super.setup();
-            this.getCanceledOrders();
+    const BootstrapNotificationPopup = CashOpeningPopup => class extends CashOpeningPopup {
+        async setup() {
+            await super.setup();
+            await this.getCanceledOrders();
         }
 
         async getCanceledOrders() {
@@ -16,23 +17,81 @@ odoo.define('lavia_pos_debt.OpeningCashPopup', function(require) {
                 const result = await this.rpc({
                     model: 'pos.session',
                     method: 'read',
-                    args: [[currentSession.id], ['unpaied_price']],
-                    context: {
-                        'active_session_id': currentSession.id
-                    },
+                    args: [[currentSession.id], ['unpaid_price']],
+                    context: { active_session_id: currentSession.id },
                 });
                 if (result && result.length) {
-                    this.env.pos.pos_session.unpaied_price = result[0].unpaied_price;
-                    // Force component to re-render
-                    this.render();
+                    this.env.pos.pos_session.unpaid_price = result[0].unpaid_price;
+
+                    if (result[0].unpaid_price && result[0].unpaid_price !== 0) {
+                        const unpaidOrders = await this.rpc({
+                            model: 'delivery.order',
+                            method: 'search_read',
+                            domain: [['state', 'not in', ['completed', 'canceled']]],
+                            fields: ['order_id', 'subtotal'],
+                        });
+
+                        await this._triggerMultipleNotifications(unpaidOrders);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch canceled orders amount:', error);
             }
         }
+
+        async _triggerMultipleNotifications(orders) {
+            await this._triggerToastNotification(orders);
+            
+            let count = 0;
+            const intervalId = setInterval(async () => {
+                const result = this.env.pos.pos_session.unpaid_price
+                console.log("unpaid price in interval: ", result);
+
+                if (result === 0){
+                    console.log('the unpaid is zero', result);
+                    clearInterval(intervalId);
+                    return;
+                }
+
+                if (count > 5) {
+                    clearInterval(intervalId);
+                    return;
+                }
+                await this._triggerToastNotification(orders);
+                count++;
+            }, 30000);
+        }
+
+        async _triggerToastNotification(orders) {
+            if (!document.getElementById('toastNotification')) {
+                const ordersList = orders.map(order => 
+                    `<li>Order ID: ${order.order_id}, Subtotal: ${order.subtotal}</li>`
+                ).join('');
+        
+                const toastHtml = `
+                <div class="toast-notification" id="toastNotification">
+                    Payment has not been received:
+                    <ul>${ordersList}</ul>
+                    <button class="close-toast" onclick="document.getElementById('toastNotification').style.display = 'none';">&times;</button>
+                </div>`;
+        
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = toastHtml;
+                document.body.appendChild(wrapper.firstElementChild);
+            }
+            
+            const toast = document.getElementById('toastNotification');
+            toast.style.display = 'block';
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.style.display = 'none';
+            }, 20000);
+        }
     };
 
-    Registries.Component.extend(CashOpeningPopup, CanceledOrdersOpeningPopup);
+    Registries.Component.extend(CashOpeningPopup, BootstrapNotificationPopup);
 
-    return CanceledOrdersOpeningPopup;
+    return BootstrapNotificationPopup;
 });

@@ -1,0 +1,53 @@
+/* Toast Notification Styling */
+.toast-notification {
+    position: fixed;
+    top: 20px; /* Position the toast at the top */
+    right: 20px; /* Position the toast to the right */
+    background-color: red; /* Red background */
+    color: white; /* White text */
+    border: 2px solid red; /* Red border */
+    padding: 10px 20px;
+    border-radius: 8px; /* Rounded corners */
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px; /* Smaller font size */
+    font-weight: 600;
+    z-index: 9999;
+    display: none; /* Hidden by default */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.5s ease, top 0.5s ease;
+    width: auto;
+    max-width: 350px; /* Maximum width for the toast */
+    display: flex;
+    align-items: center; /* Align content horizontally */
+    justify-content: space-between; /* Ensure text and button are spaced */
+}
+
+/* Fade In Effect */
+.toast-notification.show {
+    opacity: 1;
+    top: 20px; /* Toast will slide down into place */
+}
+
+/* Close Button Styling */
+.toast-notification .close-toast {
+    background: none;
+    border: none;
+    color: white; /* White close button */
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute; /* Absolutely position the close button */
+    top: 10px; /* Position the close button 10px from the top */
+    right: 10px; /* Position the close button 10px from the right */
+}
+
+/* Optional fade-out animation */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

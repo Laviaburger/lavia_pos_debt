@@ -2,18 +2,18 @@
 <templates id="template" xml:space="preserve">
     <t t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension" owl="1">
         <xpath expr="//tbody[hasclass('cash-overview')]" position="before">
-            <!-- <t t-if="env.pos.pos_session.unpaied_price != 0"> -->
+            <t t-if="typeof env.pos.pos_session.unpaid_price === 'number'">
                 <tbody class="canceled-orders">
                     <tr>
-                        <td>Unpaied Price</td>
+                        <td>Unpaid Price</td>
                         <td class="amount negative">
-                            <t t-esc="env.pos.format_currency(env.pos.pos_session.unpaied_price || 0)"/>
+                            <t t-esc="env.pos.format_currency(this.env.pos.pos_session.unpaid_price)"/>
                         </td>
                         <td></td>
                         <td></td>
                     </tr>
                 </tbody>
-            <!-- </t> -->
+            </t>
         </xpath>
     </t>
 </templates>
