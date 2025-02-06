@@ -1,0 +1,19 @@
+# Python Bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Odoo specific
+*.log
+*.pot
+*.pyc
+
+# VSCode settings
+.vscode/
+
+# Odoo compiled files
+*.xmlc
+
+# Windows
+Thumbs.db
+ehthumbs.db
