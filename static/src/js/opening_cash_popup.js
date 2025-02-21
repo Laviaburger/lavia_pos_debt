@@ -66,7 +66,7 @@ odoo.define('lavia_pos_debt.OpeningCashPopup', function(require) {
         async _triggerToastNotification(orders) {
             if (!document.getElementById('toastNotification')) {
                 const ordersList = orders.map(order => 
-                    `<li>شماره سفارش: ${order.order_number} به مبلغ: ${order.subtotal}</li>`
+                    `<li>سفارش شماره: ${order.order_number} به مبلغ: ${order.subtotal}</li>`
                 ).join('');
                 
                 const toastHtml = `
