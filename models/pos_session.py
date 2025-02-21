@@ -3,7 +3,7 @@ from odoo import models, fields, api
 class PosSession(models.Model):
     _inherit = 'pos.session'
 
-    unpaid_price = fields.Float(string='Unpaied Price', compute='_compute_canceled_orders', store=True)
+    unpaid_price = fields.Float(string='تسویه نشده', compute='_compute_canceled_orders', store=True)
 
     @api.model
     def force_recompute_unpaid(self, session_id):

@@ -28,7 +28,7 @@ odoo.define('lavia_pos_debt.OpeningCashPopup', function(require) {
                             model: 'delivery.order',
                             method: 'search_read',
                             domain: [['state', 'not in', ['completed', 'canceled']]],
-                            fields: ['order_id', 'subtotal'],
+                            fields: ['order_number', 'subtotal'],
                         });
 
                         await this._triggerMultipleNotifications(unpaidOrders);
@@ -45,15 +45,16 @@ odoo.define('lavia_pos_debt.OpeningCashPopup', function(require) {
             let count = 0;
             const intervalId = setInterval(async () => {
                 const result = this.env.pos.pos_session.unpaid_price
-                console.log("unpaid price in interval: ", result);
+                console.log(`[${count}] Unpaid price in interval: ${result}`);
 
                 if (result === 0){
-                    console.log('the unpaid is zero', result);
+                    console.log(`[${count}] The price has fully Paid ,price: ${result}`);
                     clearInterval(intervalId);
                     return;
                 }
 
-                if (count > 5) {
+                if (count > 3) {
+                    console.log(`[${count}] Unpaid price in interval: ${result}`);
                     clearInterval(intervalId);
                     return;
                 }
@@ -65,15 +66,16 @@ odoo.define('lavia_pos_debt.OpeningCashPopup', function(require) {
         async _triggerToastNotification(orders) {
             if (!document.getElementById('toastNotification')) {
                 const ordersList = orders.map(order => 
-                    `<li>Order ID: ${order.order_id}, Subtotal: ${order.subtotal}</li>`
+                    `<li>شماره سفارش: ${order.order_number} به مبلغ: ${order.subtotal}</li>`
                 ).join('');
-        
+                
                 const toastHtml = `
                 <div class="toast-notification" id="toastNotification">
-                    Payment has not been received:
+                    سفارش های ارسالی تسویه نشده:
                     <ul>${ordersList}</ul>
                     <button class="close-toast" onclick="document.getElementById('toastNotification').style.display = 'none';">&times;</button>
                 </div>`;
+                
         
                 const wrapper = document.createElement('div');
                 wrapper.innerHTML = toastHtml;

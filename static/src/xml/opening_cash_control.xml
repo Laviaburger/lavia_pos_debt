@@ -3,7 +3,7 @@
     <t t-inherit="point_of_sale.CashOpeningPopup" t-inherit-mode="extension" owl="1">
         <xpath expr="//textarea[hasclass('opening-cash-notes')]" position="after">
             <!-- <div t-if="env.pos.pos_session.unpaid_price != 0" class="canceled-orders-section"> -->
-                <span class="info-title">Unpaied Price</span>
+                <span class="info-title">تسویه نشده</span>
                 <div class="cash-input-sub-section">
                     <span class="amount negative">
                         <t t-esc="env.pos.format_currency(env.pos.pos_session.unpaid_price || 0)"/>
